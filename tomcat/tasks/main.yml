@@ -1,0 +1,124 @@
+---
+# tasks file for tomcat
+- name: INSTALLING TOMCAT
+  get_url:
+    url: http://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.39/bin/apache-tomcat-8.5.39.tar.gz
+    dest: /opt/
+    mode: 0440
+- name: UNARCHIEVING TOMCAT FOLDER
+  unarchive:
+    src: /opt/apache-tomcat-8.5.39.tar.gz
+    dest: /opt/
+    remote_src: yes
+- name: giving execute permission to startup.sh
+  file:
+    path: /opt/apache-tomcat-8.5.39/bin/startup.sh
+    state: file
+    owner: ansadm
+    group: ansadm
+    mode: "u+x,g+x,o+x"
+- name: giving execute permission to shutdown.sh
+  file:
+    path: /opt/apache-tomcat-8.5.39/bin/shutdown.sh
+    state: file
+    owner: ansadm
+    group: ansadm
+    mode: "u+x,g+x,o+x"
+- name: giving execute permission to catalina.out
+  file:
+    path: /opt/apache-tomcat-8.5.39/logs/catalina.out
+    state: file
+    owner: ansadm
+    group: ansadm
+    mode: "u+x,g+x,o+x"
+- name: giving execute permission to catalina.out
+  file:
+    path: /opt/apache-tomcat-8.5.39/bin/bootstrap.jar
+    state: file
+    owner: ansadm
+    group: ansadm
+    mode: "u+x,g+x,o+x"
+- name: giving execute permission to catalina.out
+  file:
+    path: /opt/apache-tomcat-8.5.39/bin/tomcat-juli.jar
+    state: file
+    owner: ansadm
+    group: ansadm
+    mode: "u+x,g+x,o+x"
+- name: chown of all files in tomcat bin dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/bin
+- name: chown of all files in tomcat bin dir
+  command: chmod 777 /opt/apache-tomcat-8.5.39/webapps
+- name: chown of all files in tomcat bin dir
+  command: chmod 777 /opt/apache-tomcat-8.5.39/bin
+- name: chown of all files in tomcat bin dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/webapps
+- name: chown of all files in tomcat bin dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/lib
+- name: chown of all files in tomcat bin dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/temp
+- name: chown of all files in tomcat bin dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/logs
+- name: chown of all files in tomcat dir
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39
+- name: chown of all files in tomcat bin catalina.sh
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/bin/catalina.sh
+- name: chown of all files in tomcat bin setclasspath.sh
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/bin/setclasspath.sh
+- name: chown of all files in tomcat bin catalina.out
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/logs/catalina.out
+- name: chown of all files in tomcat bin catalina-tasks.xml
+  command: chown ansadm:ansadm /opt/apache-tomcat-8.5.39/bin/catalina-tasks.xml
+- name: insert line in file catalina.bat
+  lineinfile:
+    path: /opt/apache-tomcat-8.5.39/bin/catalina.sh
+    line: 'export JAVA_OPTS="-Xms1024m -Xmx1024m -XX:MaxPermSize=256m"'
+    insertbefore: '^JAVA_OPTS="$JAVA_OPTS -Dorg.apache.catalina.security.SecurityListener.UMASK=`umask`"'
+    owner: ansadm
+    group: ansadm
+    mode: 0777
+- name: Run Tomcat
+  shell: "./startup.sh"
+  args:
+    chdir: /opt/apache-tomcat-8.5.39/bin
+- name: deleting tomcat-users file
+  file:
+    path: /opt/apache-tomcat-8.5.39/conf/tomcat-users.xml
+    state: absent
+- name: deleting context host-manager file
+  file:
+    path: /opt/apache-tomcat-8.5.39/webapps/host-manager/META-INF/context.xml
+    state: absent
+- name: deleting context manager file
+  file:
+    path: /opt/apache-tomcat-8.5.39/webapps/manager/META-INF/context.xml
+    state: absent
+- name: copying tomcat-users.xml file
+  copy:
+    src: tomcat-users.xml
+    dest: /opt/apache-tomcat-8.5.39/conf/tomcat-users.xml
+    owner: ansadm
+    group: ansadm
+    mode: 0777
+- name: copying host-manager context file
+  copy:
+    src: host-manager-context.xml
+    dest: /opt/apache-tomcat-8.5.39/webapps/host-manager/META-INF/context.xml
+    owner: ansadm
+    group: ansadm
+    mode: 0777
+- name: copying manager context file
+  copy:
+    src: manager-context.xml
+    dest: /opt/apache-tomcat-8.5.39/webapps/manager/META-INF/context.xml
+    owner: ansadm
+    group: ansadm
+    mode: 0777
+- name: Run Tomcat
+  shell: "./startup.sh"
+  args:
+    chdir: /opt/apache-tomcat-8.5.39/bin
+#- name: writing firewall rule
+#  command: firewall-cmd --zone=public --add-port=8080/tcp
+#- name: reload firewall
+#  command: firewall-cmd --reload
